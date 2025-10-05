@@ -1,0 +1,44 @@
+:root{
+  --accent:#2b6cb0;
+  --muted:#6b7280;
+  --bg:#f7fafc;
+  --card:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: 'Vazir', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background:var(--bg);
+  color:#111827;
+  line-height:1.6;
+  direction:rtl;
+}
+.container{max-width:1000px;margin:0 auto;padding:1rem}
+.site-header{background:var(--card);border-bottom:1px solid #e5e7eb}
+.site-header .container{display:flex;align-items:center;gap:1rem}
+.brand{display:flex;align-items:center;gap:0.75rem}
+.logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:inline-block}
+.nav{list-style:none;margin:0;padding:0;display:flex;gap:1rem}
+.nav a{text-decoration:none;color:var(--muted);padding:0.75rem;border-radius:6px}
+.nav a:hover{color:var(--accent);background:#f1f5f9}
+.hero{padding:3rem 0;background:linear-gradient(90deg, #e6f0ff, #fff);text-align:right}
+.hero h2{margin:0 0 0.25rem;font-size:1.8rem}
+.btn{display:inline-block;background:var(--accent);color:#fff;padding:0.6rem 1rem;border-radius:8px;text-decoration:none}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:2rem 0}
+.features article{background:var(--card);padding:1rem;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,0.04)}
+.about, .contact{background:var(--card);padding:1rem;border-radius:8px;margin:1rem 0}
+.site-footer{padding:1rem 0;text-align:center;color:var(--muted)}
+
+/* لیست نقاشان */
+.artist-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;padding:1rem 0}
+.card{background:var(--card);padding:1rem;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.card .name{font-weight:700}
+.card .meta{color:var(--muted);font-size:0.95rem}
+.card .actions{margin-top:0.75rem;display:flex;gap:0.5rem}
+.btn-outline{background:transparent;border:1px solid #e5e7eb;padding:0.45rem 0.75rem;border-radius:8px;color:var(--accent);text-decoration:none}
+
+@media (max-width:600px){
+  .site-header .container{flex-direction:column;align-items:flex-start}
+  .nav{flex-wrap:wrap}
+}
