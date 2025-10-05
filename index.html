@@ -1,178 +1,972 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>نقاش‌بابک – بهترین نقاش‌های شهربابک</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Vazir", "IRANSans", sans-serif;
-    }
-    body {
-      background-color: #f9f9f9;
-      color: #333;
-      line-height: 1.6;
-    }
-    header {
-      background-color: #2c3e50;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin-left: 1.5rem;
-    }
-    .hero {
-      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://via.placeholder.com/1200x400') center/cover;
-      color: white;
-      text-align: center;
-      padding: 4rem 1rem;
-    }
-    .hero h1 {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-    }
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-    }
-    .btn {
-      background-color: #e74c3c;
-      color: white;
-      padding: 0.8rem 2rem;
-      border: none;
-      border-radius: 5px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 3rem 1rem;
-      gap: 2rem;
-    }
-    .feature {
-      background: white;
-      padding: 1.5rem;
-      width: 30%;
-      min-width: 250px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .painters {
-      padding: 2rem 1rem;
-      background-color: white;
-    }
-    .painters h2 {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .painter-cards {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 1rem;
-      width: 220px;
-      text-align: center;
-    }
-    .card img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 1rem;
-    }
-    footer {
-      background: #2c3e50;
-      color: white;
-      text-align: center;
-      padding: 1.5rem;
-      margin-top: 3rem;
-    }
-    @media (max-width: 768px) {
-      .feature { width: 100%; }
-      header { flex-direction: column; gap: 1rem; }
-    }
-  </style>
-</head>
-<body>
+import React, { useState } from 'react';
+import { Phone, MapPin, Star, Calendar, Camera, CheckCircle, Users, PaintBucket, Shield, MessageCircle, Instagram, Map, User, Lock, Upload, Video, Image as ImageIcon, Plus, Edit3, Trash2, LogOut } from 'lucide-react';
 
-  <header>
-    <div class="logo">نقاش‌بابک</div>
-    <nav>
-      <a href="#">خانه</a>
-      <a href="#">لیست نقاش‌ها</a>
-      <a href="#">درباره ما</a>
-      <a href="#">تماس</a>
-    </nav>
-  </header>
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    services: [],
+    area: '',
+    date: '',
+    description: '',
+    image: null
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(''); // 'painter' or 'customer'
+  const [painterProfile, setPainterProfile] = useState({
+    name: 'محمد رضایی',
+    phone: '09123456789',
+    specialty: 'رنگ داخلی، دکوراسیون',
+    experience: '2018',
+    samples: [
+      { id: 1, type: 'image', url: 'https://placehold.co/400x300/6366F1/FFFFFF?text=Sample1', title: 'پروژه آپارتمان مرکزی' },
+      { id: 2, type: 'video', url: 'https://placehold.co/400x300/8B5CF6/FFFFFF?text=Video', title: 'فرآیند رنگ‌آمیزی دیوار' },
+      { id: 3, type: 'image', url: 'https://placehold.co/400x300/10B981/FFFFFF?text=Sample3', title: 'پروژه ویلا شرقی' }
+    ]
+  });
+  const [newSample, setNewSample] = useState({ type: 'image', file: null, title: '' });
 
-  <section class="hero">
-    <h1>بهترین نقاش‌های شهربابک، همه در یک جا!</h1>
-    <p>خدمات رنگ‌آمیزی داخلی و خارجی با کیفیت و قیمت منصفانه</p>
-    <a href="request.html" class="btn">درخواست نقاش</a>
-  </section>
+  const painters = [
+    {
+      id: 1,
+      name: 'محمد رضایی',
+      image: 'https://placehold.co/300x300/4F46E5/FFFFFF?text=MR',
+      specialty: 'رنگ داخلی، دکوراسیون',
+      rating: 4.8,
+      projects: 156,
+      experience: '2018'
+    },
+    {
+      id: 2,
+      name: 'علی حسینی',
+      image: 'https://placehold.co/300x300/059669/FFFFFF?text=AH',
+      specialty: 'رنگ خارجی، ضدآب',
+      rating: 4.9,
+      projects: 203,
+      experience: '2016'
+    },
+    {
+      id: 3,
+      name: 'حسین محمدی',
+      image: 'https://placehold.co/300x300/DC2626/FFFFFF?text=HM',
+      specialty: 'ترمیم، بازسازی',
+      rating: 4.7,
+      projects: 128,
+      experience: '2020'
+    }
+  ];
 
-  <section class="features">
-    <div class="feature">
-      <h3>✅ اعتماد</h3>
-      <p>نظرات واقعی مشتریان و امتیازدهی شفاف</p>
-    </div>
-    <div class="feature">
-      <h3>✅ کیفیت</h3>
-      <p>همه نقاش‌ها از رنگ‌های معتبر فروشگاه ما استفاده می‌کنند</p>
-    </div>
-    <div class="feature">
-      <h3>✅ پشتیبانی</h3>
-      <p>هماهنگی تا اتمام پروژه توسط تیم نقاش‌بابک</p>
-    </div>
-  </section>
+  const services = [
+    'رنگ‌آمیزی داخلی',
+    'رنگ‌آمیزی خارجی',
+    'دکوراسیون دیوار',
+    'ترمیم و بازسازی',
+    'سایر'
+  ];
 
-  <section class="painters">
-    <h2>نقاش‌های برتر</h2>
-    <div class="painter-cards">
-      <div class="card">
-        <img src="https://via.placeholder.com/100" alt="علی رضایی">
-        <h4>علی رضایی</h4>
-        <p>⭐⭐⭐⭐⭐</p>
-        <p>رنگ داخلی، دکوراسیون</p>
+  const benefits = [
+    { icon: Shield, title: 'اعتماد', description: 'همه نقاش‌ها تأیید شده و با سابقه' },
+    { icon: PaintBucket, title: 'قیمت شفاف', description: 'بدون هزینه پنهان، قیمت‌گذاری شفاف' },
+    { icon: CheckCircle, title: 'گارانتی کیفیت', description: 'رضایت تضمین شده یا بازگشت وجه' }
+  ];
+
+  const renderHeader = () => (
+    <header className="bg-white shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center space-x-2">
+            <PaintBucket className="h-8 w-8 text-blue-600" />
+            <span className="text-xl font-bold text-gray-900">رنگ‌آمیزی شهربابک</span>
+          </div>
+          <nav className="hidden md:flex space-x-8">
+            {['home', 'painters', 'about', 'contact'].map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`capitalize font-medium transition-colors ${
+                  currentPage === page ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
+                }`}
+              >
+                {page === 'home' ? 'صفحه اصلی' : 
+                 page === 'painters' ? 'لیست نقاش‌ها' :
+                 page === 'about' ? 'درباره ما' : 'تماس'}
+              </button>
+            ))}
+          </nav>
+          <div className="flex items-center space-x-4">
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => {
+                    setIsLoggedIn(false);
+                    setUserRole('');
+                  }}
+                  className="flex items-center text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  <LogOut className="h-5 w-5 mr-1" />
+                  خروج
+                </button>
+                {userRole === 'painter' && (
+                  <button
+                    onClick={() => setCurrentPage('painter-dashboard')}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    پنل کاربری
+                  </button>
+                )}
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setCurrentPage('painter-register')}
+                  className="text-blue-600 hover:text-blue-700 transition-colors font-medium"
+                >
+                  ثبت‌نام نقاش
+                </button>
+                <button
+                  onClick={() => setCurrentPage('request')}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  درخواست نقاش
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/100" alt="حسین مدنی">
-        <h4>حسین مدنی</h4>
-        <p>⭐⭐⭐⭐</p>
-        <p>ضدآب، فضای باز</p>
+    </header>
+  );
+
+  const renderHome = () => (
+    <div className="bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            رنگ‌آمیزی خونه‌ات رو به اعتماد بسپار
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 opacity-90">
+            بهترین نقاش‌های شهربابک، همه در یک جا!
+          </p>
+          <button
+            onClick={() => setCurrentPage('request')}
+            className="bg-white text-blue-600 px-8 py-4 rounded-full text-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+          >
+            درخواست نقاش
+          </button>
+        </div>
+      </div>
+
+      {/* Top Painters */}
+      <div className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">برترین نقاش‌های ما</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {painters.slice(0, 3).map((painter) => (
+              <div key={painter.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <img src={painter.image} alt={painter.name} className="w-full h-64 object-cover" />
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{painter.name}</h3>
+                  <p className="text-gray-600 mb-3">{painter.specialty}</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center">
+                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                      <span className="mr-1 font-medium">{painter.rating}</span>
+                    </div>
+                    <span className="text-sm text-gray-500">{painter.projects} پروژه</span>
+                  </div>
+                  <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    درخواست همین نقاش
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Benefits */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">چرا ما را انتخاب کنید؟</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="text-center p-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                  <benefit.icon className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                <p className="text-gray-600">{benefit.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-gray-900 text-white py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <PaintBucket className="h-6 w-6 text-blue-400" />
+            <span className="font-bold">رنگ‌آمیزی شهربابک</span>
+          </div>
+          <p>طراحی‌شده توسط فروشگاه رنگ و تجهیزات ساختمانی شهربابک، مرجع رنگ و تجهیزات ساختمانی شهربابک</p>
+        </div>
       </div>
     </div>
-    <div style="text-align: center; margin-top: 1.5rem;">
-      <a href="#" class="btn">مشاهده همه نقاش‌ها</a>
+  );
+
+  const renderRequestForm = () => (
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">درخواست خدمات نقاشی</h2>
+          
+          {formSubmitted ? (
+            <div className="text-center py-12">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">درخواست شما ثبت شد!</h3>
+              <p className="text-gray-600 text-lg">
+                حداکثر تا ۲۴ ساعت با شما تماس گرفته می‌شود.
+              </p>
+              <button
+                onClick={() => {
+                  setFormSubmitted(false);
+                  setFormData({
+                    name: '',
+                    phone: '',
+                    address: '',
+                    services: [],
+                    area: '',
+                    date: '',
+                    description: '',
+                    image: null
+                  });
+                }}
+                className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                ثبت درخواست جدید
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              setFormSubmitted(true);
+            }} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">نام و نام خانوادگی</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">شماره تماس</label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">آدرس دقیق</label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">نوع کار</label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {services.map((service) => (
+                    <label key={service} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.services.includes(service)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData({...formData, services: [...formData.services, service]});
+                          } else {
+                            setFormData({...formData, services: formData.services.filter(s => s !== service)});
+                          }
+                        }}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-gray-700">{service}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">متراژ تقریبی (متر مربع)</label>
+                  <input
+                    type="number"
+                    value={formData.area}
+                    onChange={(e) => setFormData({...formData, area: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">تاریخ دلخواه شروع کار</label>
+                  <input
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData({...formData, date: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">توضیحات اضافی</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">آپلود عکس (اختیاری)</label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setFormData({...formData, image: e.target.files[0]})}
+                    className="flex-1"
+                  />
+                  <Camera className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
+              >
+                ارسال درخواست
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
     </div>
-  </section>
+  );
 
-  <footer>
-    <p>طراحی‌شده توسط فروشگاه [نام فروشگاه شما] – مرجع رنگ شهربابک</p>
-    <p>آدرس: [آدرس فروشگاه] | تلفن: [شماره تماس]</p>
-  </footer>
+  const renderPainterRegister = () => (
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">ثبت‌نام به عنوان نقاش</h2>
+          
+          <form className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">نام و نام خانوادگی</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">شماره تماس</label>
+                <input
+                  type="tel"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
 
-</body>
-</html>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">آدرس</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">تخصص‌ها</label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {services.map((service) => (
+                  <label key={service} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-gray-700">{service}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">سابقه کار (از چه سالی)</label>
+              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>2020</option>
+                <option>2019</option>
+                <option>2018</option>
+                <option>2017</option>
+                <option>2016</option>
+                <option>2015</option>
+                <option>قبل از 2015</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">نمونه کار اولیه (عکس یا ویدیو)</label>
+              <div className="flex items-center space-x-4">
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  className="flex-1"
+                />
+                <Upload className="h-6 w-6 text-gray-400" />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">رمز عبور</label>
+              <input
+                type="password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">تکرار رمز عبور</label>
+              <input
+                type="password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsLoggedIn(true);
+                setUserRole('painter');
+                setCurrentPage('painter-dashboard');
+              }}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
+            >
+              ثبت‌نام
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPainterDashboard = () => (
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">پنل کاربری نقاش</h2>
+            <div className="flex items-center space-x-2 text-blue-600">
+              <User className="h-6 w-6" />
+              <span className="font-medium">{painterProfile.name}</span>
+            </div>
+          </div>
+
+          {/* Profile Info */}
+          <div className="bg-blue-50 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">اطلاعات پروفایل</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">نام</label>
+                <p className="text-gray-900">{painterProfile.name}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">شماره تماس</label>
+                <p className="text-gray-900">{painterProfile.phone}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">تخصص‌ها</label>
+                <p className="text-gray-900">{painterProfile.specialty}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">سابقه کار</label>
+                <p className="text-gray-900">از سال {painterProfile.experience}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Add New Sample */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">افزودن نمونه کار جدید</h3>
+            <form className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">عنوان نمونه کار</label>
+                <input
+                  type="text"
+                  value={newSample.title}
+                  onChange={(e) => setNewSample({...newSample, title: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="مثال: پروژه آپارتمان مرکزی"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">نوع نمونه کار</label>
+                <div className="flex space-x-4">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="sampleType"
+                      checked={newSample.type === 'image'}
+                      onChange={() => setNewSample({...newSample, type: 'image'})}
+                      className="text-blue-600"
+                    />
+                    <ImageIcon className="h-5 w-5 text-gray-600" />
+                    <span>عکس</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="sampleType"
+                      checked={newSample.type === 'video'}
+                      onChange={() => setNewSample({...newSample, type: 'video'})}
+                      className="text-blue-600"
+                    />
+                    <Video className="h-5 w-5 text-gray-600" />
+                    <span>ویدیو</span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {newSample.type === 'image' ? 'آپلود عکس' : 'آپلود ویدیو'}
+                </label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="file"
+                    accept={newSample.type === 'image' ? 'image/*' : 'video/*'}
+                    onChange={(e) => setNewSample({...newSample, file: e.target.files[0]})}
+                    className="flex-1"
+                  />
+                  <Upload className="h-6 w-6 text-gray-400" />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (newSample.title && newSample.file) {
+                    const newSampleObj = {
+                      id: painterProfile.samples.length + 1,
+                      type: newSample.type,
+                      url: URL.createObjectURL(newSample.file),
+                      title: newSample.title
+                    };
+                    setPainterProfile({
+                      ...painterProfile,
+                      samples: [...painterProfile.samples, newSampleObj]
+                    });
+                    setNewSample({ type: 'image', file: null, title: '' });
+                  }
+                }}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                افزودن نمونه کار
+              </button>
+            </form>
+          </div>
+
+          {/* Samples Gallery */}
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">نمونه کارهای شما ({painterProfile.samples.length})</h3>
+            {painterProfile.samples.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                هنوز نمونه کاری اضافه نکرده‌اید.
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {painterProfile.samples.map((sample) => (
+                  <div key={sample.id} className="bg-white border rounded-lg overflow-hidden">
+                    <div className="relative">
+                      {sample.type === 'image' ? (
+                        <img src={sample.url} alt={sample.title} className="w-full h-48 object-cover" />
+                      ) : (
+                        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                          <Video className="h-12 w-12 text-gray-400" />
+                        </div>
+                      )}
+                      <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+                        {sample.type === 'image' ? 'عکس' : 'ویدیو'}
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h4 className="font-medium text-gray-900 mb-2">{sample.title}</h4>
+                      <div className="flex space-x-2">
+                        <button className="text-blue-600 hover:text-blue-700">
+                          <Edit3 className="h-4 w-4" />
+                        </button>
+                        <button 
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => {
+                            setPainterProfile({
+                              ...painterProfile,
+                              samples: painterProfile.samples.filter(s => s.id !== sample.id)
+                            });
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPainters = () => (
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">لیست نقاش‌های عضو</h2>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {painters.map((painter) => (
+            <div key={painter.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <img src={painter.image} alt={painter.name} className="w-full h-64 object-cover" />
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{painter.name}</h3>
+                <p className="text-gray-600 mb-3">{painter.specialty}</p>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                    <span className="mr-1 font-medium">{painter.rating}</span>
+                  </div>
+                  <span className="text-sm text-gray-500">{painter.projects} پروژه</span>
+                </div>
+                <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  درخواست همین نقاش
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAbout = () => (
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">درباره ما</h2>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">تاریخچه فروشگاه</h3>
+              <p className="text-gray-600 leading-relaxed">
+                فروشگاه رنگ و تجهیزات ساختمانی شهربابک با بیش از ۱۵ سال سابقه، اولین و معتبرترین مرجع رنگ و تجهیزات ساختمانی در شهر شهربابک است. 
+                با داشتن انبار مرکزی و دستگاه تینت منحصربه‌فرد، همواره سعی کرده‌ایم بهترین محصولات را با بالاترین کیفیت به مشتریان عزیز ارائه دهیم.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">هدف پلتفرم</h3>
+              <p className="text-gray-600 leading-relaxed">
+                هدف ما ایجاد اعتماد، شفافیت و کیفیت در خدمات نقاشی است. با این پلتفرم، 
+                مشتریان می‌توانند با اطمینان کامل بهترین نقاش‌های شهر را انتخاب کنند و نقاش‌ها نیز 
+                به مشتریان جدیدی دسترسی پیدا می‌کنند.
+              </p>
+            </div>
+            
+            <div className="bg-gray-100 rounded-lg p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">تماس با ما</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5 text-blue-600" />
+                  <span className="text-gray-700">۰۲۱-۱۲۳۴۵۶۷۸</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <MapPin className="h-5 w-5 text-blue-600" />
+                  <span className="text-gray-700">شهربابک، خیابان اصلی، جنب مسجد جامع</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Instagram className="h-5 w-5 text-blue-600" />
+                  <span className="text-gray-700">@rang_shahrbabak</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContact = () => (
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">تماس با ما</h2>
+        
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">فرم تماس</h3>
+            <form className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">نام</label>
+                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">ایمیل</label>
+                <input type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">موضوع</label>
+                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option>پیشنهاد</option>
+                  <option>شکایت</option>
+                  <option>همکاری</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">پیام</label>
+                <textarea rows={4} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+              </div>
+              <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                ارسال پیام
+              </button>
+            </form>
+          </div>
+          
+          <div>
+            <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">اطلاعات تماس</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-6 w-6 text-blue-600" />
+                  <span className="text-gray-700 text-lg">۰۲۱-۱۲۳۴۵۶۷۸</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <MapPin className="h-6 w-6 text-blue-600" />
+                  <span className="text-gray-700 text-lg">شهربابک، خیابان اصلی، جنب مسجد جامع</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Instagram className="h-6 w-6 text-blue-600" />
+                  <span className="text-gray-700 text-lg">@rang_shahrbabak</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div className="h-64 bg-gray-200 flex items-center justify-center">
+                <Map className="h-16 w-16 text-gray-400" />
+                <span className="text-gray-500 mr-2">نقشه گوگل</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPainterProfile = () => {
+    const painter = painters[0];
+    return (
+      <div className="bg-gray-50 min-h-screen py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="p-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6 mb-8">
+                <img src={painter.image} alt={painter.name} className="w-32 h-32 rounded-full object-cover" />
+                <div className="text-center md:text-right flex-1">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{painter.name}</h1>
+                  <p className="text-gray-600 mb-4">{painter.specialty}</p>
+                  <div className="flex items-center justify-center md:justify-end space-x-4">
+                    <div className="flex items-center">
+                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                      <span className="mr-1 font-medium">{painter.rating}</span>
+                    </div>
+                    <span className="text-gray-500">{painter.projects} پروژه انجام شده</span>
+                  </div>
+                  <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center mx-auto md:mx-0">
+                    <Phone className="h-4 w-4 mr-2" />
+                    تماس بگیر
+                  </button>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">نمونه کارها</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {painterProfile.samples.slice(0, 4).map((sample, index) => (
+                    <div key={index} className="relative">
+                      {sample.type === 'image' ? (
+                        <img src={sample.url} alt={sample.title} className="w-full h-48 object-cover rounded-lg" />
+                      ) : (
+                        <div className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <Video className="h-12 w-12 text-gray-400" />
+                          <span className="text-gray-600 mr-2">ویدیو</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">خدمات ارائه شده</h2>
+                <div className="flex flex-wrap gap-2">
+                  {painter.specialty.split('،').map((service, index) => (
+                    <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      {service.trim()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">نظرات مشتریان</h2>
+                <div className="space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                    </div>
+                    <p className="text-gray-700">"کار بسیار عالی و حرفه‌ای انجام داد. واقعاً راضی هستم!"</p>
+                    <p className="text-gray-500 text-sm mt-2">— علی رضایی</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <PaintBucket className="h-5 w-5 text-blue-600 mr-2" />
+                  <p className="text-blue-800">
+                    این نقاش از محصولات معتبر فروشگاه رنگ و تجهیزات ساختمانی شهربابک استفاده می‌کند
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderPainterBenefits = () => (
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">مزایای عضویت برای نقاش‌ها</h2>
+          
+          <div className="space-y-6">
+            <div className="flex items-start space-x-4">
+              <div className="bg-green-100 p-3 rounded-full">
+                <Users className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">دسترسی به مشتریان جدید</h3>
+                <p className="text-gray-600">بدون نیاز به واسطه و با حداقل هزینه بازاریابی، به مشتریان جدیدی دسترسی پیدا کنید.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-4">
+              <div className="bg-blue-100 p-3 rounded-full">
+                <MessageCircle className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">تبلیغ رایگان پروفایل</h3>
+                <p className="text-gray-600">پروفایل حرفه‌ای شما در پلتفرم ما به صورت رایگان به نمایش گذاشته می‌شود.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-4">
+              <div className="bg-purple-100 p-3 rounded-full">
+                <PaintBucket className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">تخفیف ویژه خرید محصولات</h3>
+                <p className="text-gray-600">تخفیف ویژه ۱۰-۱۵٪ در خرید رنگ و لوازم از فروشگاه ما برای همه نقاش‌های عضو.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-4">
+              <div className="bg-yellow-100 p-3 rounded-full">
+                <CheckCircle className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">گواهی همکاری رسمی</h3>
+                <p className="text-gray-600">امکان دریافت گواهی همکاری رسمی برای افزایش اعتبار حرفه‌ای شما.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-4">
+              <div className="bg-red-100 p-3 rounded-full">
+                <Phone className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">پشتیبانی فنی</h3>
+                <p className="text-gray-600">پشتیبانی تخصصی در مسائل فنی و رنگ‌آمیزی توسط کارشناسان مجرب.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-12 text-center">
+            <button 
+              onClick={() => setCurrentPage('painter-register')}
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
+            >
+              ثبت‌نام به عنوان نقاش
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-white">
+      {renderHeader()}
+      
+      {currentPage === 'home' && renderHome()}
+      {currentPage === 'request' && renderRequestForm()}
+      {currentPage === 'painter-register' && renderPainterRegister()}
+      {currentPage === 'painter-dashboard' && renderPainterDashboard()}
+      {currentPage === 'painters' && renderPainters()}
+      {currentPage === 'about' && renderAbout()}
+      {currentPage === 'contact' && renderContact()}
+      {currentPage === 'painter-profile' && renderPainterProfile()}
+      {currentPage === 'painter-benefits' && renderPainterBenefits()}
+    </div>
+  );
+};
+
+export default App;
